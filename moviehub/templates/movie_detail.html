@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }}{% endblock %}
+
+{% block content %}
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-4">
+        {% if movie.poster %}
+          <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="img-fluid">
+        {% else %}
+          <img src="https://ap.auezov.edu.kz/images/news/aaa001.png" alt="Нет изображения" class="img-fluid">
+        {% endif %}
+      </div>
+
+      <div class="col-md-8">
+        <h2>{{ movie.title }}</h2>
+        <p><strong>Дата выхода:</strong> {{ movie.release_date }}</p>
+        <p><strong>Описание:</strong> {{ movie.description }}</p>
+        <p><strong>Жанры:</strong>
+          {% for genre in movie.genres.all %}
+            {{ genre.name }}
+            {% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+
+        <h4>Рейтинг:</h4>
+        {% if movie.average_rating %}
+          <p>Средний рейтинг: {{ movie.average_rating }}</p>
+        {% else %}
+          <p>Нет оценок</p>
+        {% endif %}
+
+        <a href="{% url 'movie_update' movie.id %}" class="btn btn-warning">Редактировать</a>
+        <a href="{% url 'movie_delete' movie.id %}" class="btn btn-danger">Удалить</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Фильм{% endblock %}
+
+{% block content %}
+<h2>
+  {% if form.instance.pk %}Редактировать фильм{% else %}Добавить фильм{% endif %}
+</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}
+        <div class="text-danger">
+          {% for error in field.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-success">Сохранить</button>
+  <a href="{% url 'movies_list' %}" class="btn btn-secondary">Назад</a>
+</form>
+{% endblock %}
