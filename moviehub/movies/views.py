@@ -25,15 +25,15 @@ def movies_list(request):
     # Поиск по названию (поиск с учетом регистра)
     search_term = request.GET.get('search', '')
 
+     # Извлекаем все фильмы с их жанрами, пользователями, создавшими фильмы, и пользователями, добавившими фильм в избранное
+    movies = Movie.objects.select_related('created_by')\
+                        .prefetch_related('genres', 'favorited_by')\
+                        .all()
+
     # Фильтруем фильмы по названию, если строка поиска не пуста
     if search_term:
         movies = Movie.objects.filter(title__icontains=search_term)
 
-     # Извлекаем все фильмы с их жанрами, пользователями, создавшими фильмы, и пользователями, добавившими фильм в избранное
-    movies = Movie.objects.select_related('created_by')\
-                          .prefetch_related('genres', 'favorited_by')\
-                          .all()
-    
     movie_count = Movie.objects.count()
 
     # Топ 5 фильмов (по средней оценке)
