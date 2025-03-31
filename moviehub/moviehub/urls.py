@@ -11,6 +11,23 @@ from movies.views import (
     FilteredMoviesView, FilteredFavoritesView
 )
 
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="MovieHub API",
+        default_version='v1',
+        description="Документация API для MovieHub",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="your@email.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
 # Настройка роутера для API
 router = DefaultRouter()
 router.register('users', UserViewSet)
@@ -38,6 +55,9 @@ urlpatterns = [
     path('movies/create/', views.movie_create, name='movie_create'),  # Форма создания фильма
     path('movies/<int:pk>/edit/', views.movie_update, name='movie_update'),  # Форма редактирования фильма
     path('movies/<int:pk>/delete/', views.movie_delete, name='movie_delete'),  # Удаление фильма
+
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     path('__debug__/', include(debug_toolbar.urls)),
 ]

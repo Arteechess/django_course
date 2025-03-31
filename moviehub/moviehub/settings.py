@@ -30,12 +30,6 @@ ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = 'movies_list'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,  # Количество объектов на одной странице
-}
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -52,6 +46,7 @@ INSTALLED_APPS = [
     'import_export',
     'django_filters',
     'debug_toolbar',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +59,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+}
 
 ROOT_URLCONF = 'moviehub.urls'
 
