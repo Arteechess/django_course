@@ -31,6 +31,9 @@ class MovieAdmin(ExportMixin, SimpleHistoryAdmin, admin.ModelAdmin):
     list_filter = ('release_date', 'genres')  # Фильтры по дате выхода и жанрам
     ordering = ('-release_date',)  # Сортировка по дате выхода (по убыванию)
     readonly_fields = ('created_by', 'poster_preview')
+    date_hierarchy = 'release_date'  # Добавление date_hierarchy
+    raw_id_fields = ('created_by',)  # Оптимизация поиска пользователя
+    filter_horizontal = ('genres',)
 
     inlines = [GenreInline, FavoriteInline]  # Инлайнов
 
@@ -43,33 +46,26 @@ class MovieAdmin(ExportMixin, SimpleHistoryAdmin, admin.ModelAdmin):
         }),
     )
 
+    @admin.display(description="Создатель")
     def created_by_link(self, obj):
-        """Гиперссылка на пользователя, создавшего фильм"""
         if obj.created_by:
             url = f"/admin/movies/user/{obj.created_by.id}/change/"
             return format_html('<a href="{}">{}</a>', url, obj.created_by.username)
         return "Не указано"
-    created_by_link.short_description = "Создатель"
 
+    @admin.display(description="Жанры")
     def genre_list(self, obj):
-        """Список жанров в удобном формате"""
         return ", ".join([genre.name for genre in obj.genres.all()])
-    genre_list.short_description = "Жанры"
 
+    @admin.display(description="Превью постера")
     def poster_preview(self, obj):
-        """Превью постера"""
         if obj.poster:
             return format_html('<img src="{}" style="max-height: 100px;" />', obj.poster.url)
         return "Нет постера"
-    poster_preview.short_description = "Превью постера"
 
+    @admin.display(description="Высокий рейтинг фильма")
     def recent_movie(self, obj):
-        """Высокий рейтинг фильма"""
-        avg_rating = obj.average_rating()
-        if avg_rating > 7:
-            return "Да"
-        return "Нет"
-    recent_movie.short_description = "Высокий рейтинг фильма"
+        return "Да" if obj.average_rating() > 7 else "Нет"
 
     def generate_pdf(self, request, queryset):
         """Генерация PDF отчета"""
@@ -138,19 +134,19 @@ class FavoriteAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     search_fields = ('user__username', 'movie__title')
     ordering = ('-added_at',)
 
+    @admin.display(description="Пользователь")
     def user_link(self, obj):
         if obj.user:
             url = f"/admin/movies/user/{obj.user.id}/change/"
             return format_html('<a href="{}">{}</a>', url, obj.user.username)
         return "Не указано"
-    user_link.short_description = "Пользователь"
 
+    @admin.display(description="Фильм")
     def movie_link(self, obj):
         if obj.movie:
             url = f"/admin/movies/movie/{obj.movie.id}/change/"
             return format_html('<a href="{}">{}</a>', url, obj.movie.title)
         return "Не указано"
-    movie_link.short_description = "Фильм"
 
 
 @admin.register(Rating)
