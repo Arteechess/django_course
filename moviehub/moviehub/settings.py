@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,11 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'movies',
+    'cache_log',
     'rest_framework.authtoken',
     'simple_history',
     'import_export',
     'django_filters',
     'debug_toolbar',
+    'django_celery_beat',
     'drf_yasg',
 ]
 
@@ -57,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'cache_log.middleware.LoggingMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -141,3 +146,45 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+
+CELERY_BEAT_SCHEDULE = {
+    'save-cache-log-every-minute': {
+        'task': 'cache_log.tasks.save_cache_log_task',
+        'schedule': crontab(minute='*/1'),
+    },
+    'log-new-movies-every-minute': {
+        'task': 'cache_log.tasks.log_new_movies_task',
+        'schedule': crontab(minute='*/1'),
+    },
+    'send-weekly-best-movies-email': {
+        'task': 'movies.tasks.send_weekly_best_movies_email_task',
+        'schedule': crontab(minute='*/1'),
+    },
+}
+
+# Кэш Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/0',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# Email для Mailhog
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mailhog'
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'noreply@moviehub.local'

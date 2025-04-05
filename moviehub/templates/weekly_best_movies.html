@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лучшие фильмы этой недели</title>
+</head>
+<body>
+    <h1>Здравствуйте, {{ user.username }}!</h1>
+    <p>Вот список лучших фильмов этой недели:</p>
+    
+    <ul>
+        {% for movie in movies %}
+            <li>
+                <strong>{{ movie.title }}</strong><br>
+                <em>{{ movie.release_date }}</em><br>
+                <p>{{ movie.description }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p>Приятного просмотра!</p>
+</body>
+</html>

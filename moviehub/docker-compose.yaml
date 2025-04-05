@@ -1,0 +1,71 @@
+version: "3.7"
+
+services:
+  moviehub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moviehub
+    hostname: moviehub
+    stdin_open: true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/usr/src/app/
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - redis
+    networks:
+      - moviehub-net
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - moviehub-net
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: celery-worker
+    command: "celery -A moviehub worker -l info"
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - redis
+      - moviehub
+    restart: on-failure
+    networks:
+      - moviehub-net
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: celery-beat
+    command: "celery -A moviehub beat -l info"
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - celery-worker
+    restart: on-failure
+    networks:
+      - moviehub-net
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    logging:
+      driver: "none"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - moviehub-net
+
+networks:
+  moviehub-net:
