@@ -60,6 +60,9 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
+    path('movies/<int:pk>/favorites/', MovieViewSet.as_view({'get': 'favorites'}), name='movie-favorites'),
+    path('api/movies/<int:pk>/toggle_favorite/', MovieViewSet.as_view({'post': 'toggle_favorite'}), name='movie-toggle-favorite'),
+
     path('__debug__/', include(debug_toolbar.urls)),
 ]
 

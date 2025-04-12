@@ -90,6 +90,7 @@ def top_rated_movies():
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='favorited_by')
+    comment = models.TextField(blank=True, null=True)  # Добавляем поле для комментария
     added_at = models.DateTimeField(auto_now_add=True)
     history = HistoricalRecords()
 
@@ -97,9 +98,10 @@ class Favorite(models.Model):
         unique_together = ('user', 'movie')
         verbose_name_plural = "Любимые фильмы"
         verbose_name = "Любимые фильмы"
+        ordering = ['-added_at']  # Сортировка по дате добавления
 
     def __str__(self):
-        return f"Пользователь {self.user} добавил в избранное фильм {self.movie}"
+        return f"{self.user.username} добавил {self.movie.title} в избранное"
 
 
 class Rating(models.Model):

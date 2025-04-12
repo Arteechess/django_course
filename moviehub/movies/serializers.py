@@ -23,9 +23,19 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    movie_title = serializers.CharField(source='movie.title', read_only=True)
+    movie_poster = serializers.SerializerMethodField()
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
     class Meta:
         model = Favorite
-        fields = ['id', 'user', 'movie', 'added_at']
+        fields = ['id', 'user', 'user_username', 'movie', 'movie_title', 'movie_poster', 'comment', 'added_at']
+        read_only_fields = ['user', 'added_at']
+
+    def get_movie_poster(self, obj):
+        if obj.movie.poster:
+            return obj.movie.poster.url
+        return None
 
 
 class RatingSerializer(serializers.ModelSerializer):

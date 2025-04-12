@@ -213,8 +213,49 @@
       </div>
     </div>
 
-    <!-- Дополнительные секции (активные критики, похожие фильмы и т.д.) -->
-    <!-- ... -->
+    <div class="favorites-list mt-4">
+      <h4>Добавили в избранное:</h4>
+      <ul class="list-group">
+        {% for favorite in movie.favorited_by.all %}
+          <li class="list-group-item">
+            <strong>{{ favorite.user.username }}</strong>
+            {% if favorite.comment %}
+              <p class="mb-0">{{ favorite.comment }}</p>
+            {% endif %}
+            <small class="text-muted">{{ favorite.added_at|date:"d.m.Y H:i" }}</small>
+          </li>
+        {% empty %}
+          <li class="list-group-item">Пока никто не добавил этот фильм в избранное</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="favorite-section mt-4">
+      {% if user.is_authenticated %}
+        <form id="favoriteForm" method="post" action="{% url 'movie-toggle-favorite' movie.id %}">
+          {% csrf_token %}
+          
+          {# Поле для комментария показываем только если его еще нет #}
+          {% if not favorite or not favorite.comment %}
+          <div class="mb-3" id="comment-field">
+            <textarea name="comment" class="form-control" placeholder="Оставьте комментарий (необязательно)">{% if favorite and favorite.comment %}{{ favorite.comment }}{% endif %}</textarea>
+          </div>
+          {% endif %}
+          
+          <button type="submit" class="button_1">
+            {% if favorite %}
+              <i class="fa fa-heart"></i> Удалить из избранного
+            {% else %}
+              <i class="fa fa-heart-o"></i> Добавить в избранное
+            {% endif %}
+          </button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}?next={{ request.path }}" class="button_1">
+          <i class="fa fa-heart-o"></i> Войдите, чтобы добавить в избранное
+        </a>
+      {% endif %}
+    </div>
   </div>
 </section>
 
@@ -266,6 +307,27 @@
   .effect-jazz:hover img {
     transform: scale(1.05);
   }
+  .button_1 {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+    margin-top: 10px;
+  }
+  .button_1:hover {
+    background: #e05d00;
+    color: white;
+  }
+  .fa-heart-o, .fa-heart {
+    margin-right: 5px;
+  }
+  .fa-heart {
+    color: #fff;
+  }
 </style>
 
 <script>
@@ -276,5 +338,38 @@
       iframe.src = iframe.src;
     });
   }
+
+  document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('favoriteForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      
+      fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+    });
+  }
+  
+  const editBtn = document.getElementById('edit-comment');
+  if (editBtn) {
+    editBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelector('#comment-field').style.display = 'block';
+      this.parentElement.style.display = 'none';
+    });
+  }
+});
 </script>
 {% endblock %}

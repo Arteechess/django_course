@@ -73,7 +73,16 @@ def movies_list(request):
 
 def movie_detail(request, pk):
     movie = get_object_or_404(Movie, pk=pk)
-    return render(request, 'movie_detail.html', {'movie': movie})
+    favorite = None
+    
+    if request.user.is_authenticated:
+        favorite = Favorite.objects.filter(user=request.user, movie=movie).first()
+    
+    context = {
+        'movie': movie,
+        'favorite': favorite
+    }
+    return render(request, 'movie_detail.html', context)
 
 def movie_create(request):
     if request.method == 'POST':
@@ -193,6 +202,31 @@ class MovieViewSet(ModelViewSet):
         favorite = Favorite.objects.create(user=user, movie=movie)
         serializer = FavoriteSerializer(favorite)
         return Response(serializer.data, status=201)
+
+    @action(detail=True, methods=['post'])
+    def toggle_favorite(self, request, pk=None):
+        movie = self.get_object()
+        user = request.user
+        
+        try:
+            favorite = Favorite.objects.get(user=user, movie=movie)
+            favorite.delete()
+            return Response({'status': 'removed'}, status=200)
+        except Favorite.DoesNotExist:
+            comment = request.data.get('comment', '')
+            Favorite.objects.create(
+                user=user,
+                movie=movie,
+                comment=comment
+            )
+            return Response({'status': 'added'}, status=201)
+
+    @action(detail=True, methods=['get'])
+    def favorites(self, request, pk=None):
+        movie = self.get_object()
+        favorites = movie.favorited_by.all()
+        serializer = FavoriteSerializer(favorites, many=True)
+        return Response(serializer.data)
 
 
 class FavoriteViewSet(viewsets.ModelViewSet):
