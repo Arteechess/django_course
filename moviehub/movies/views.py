@@ -19,7 +19,16 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.http import HttpResponseRedirect  # Добавлено: HttpResponseRedirect для редиректов
 from django.db.models import Avg
+from django.http import JsonResponse
+from django.core.paginator import Paginator
 
+def home_view(request):
+    context = {
+        'featured_movies': Movie.objects.recent_movies()[:4],
+        'top_movies': Movie.objects.annotate(avg_score=Avg('ratings__score')).order_by('-avg_score')[:3],
+        'latest_reviews': Rating.objects.select_related('user', 'movie').order_by('-rated_at')[:3]
+    }
+    return render(request, 'home.html', context)
 
 def movies_list(request):
     # Поиск по названию (поиск с учетом регистра)
@@ -34,6 +43,10 @@ def movies_list(request):
     if search_term:
         movies = Movie.objects.filter(title__icontains=search_term)
 
+    paginator = Paginator(movies, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     movie_count = Movie.objects.count()
 
     # Топ 5 фильмов (по средней оценке)
@@ -47,7 +60,8 @@ def movies_list(request):
 
     # Передаем данные в контекст
     context = {
-        'movies': movies,
+        'movies': page_obj,
+        'page_obj': page_obj,
         'movie_count': movie_count,
         'top_movies': top_movies,
         'movie_titles': movie_titles,
@@ -95,7 +109,7 @@ def movie_update(request, pk):
         form = MovieForm(request.POST, request.FILES, instance=movie)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/')  # Добавлено: HttpResponseRedirect для редиректа
+            return HttpResponseRedirect('/movies/list')  # Добавлено: HttpResponseRedirect для редиректа
     else:
         form = MovieForm(instance=movie)
     return render(request, 'movie_form.html', {'form': form})
@@ -107,18 +121,23 @@ def movie_delete(request, pk):
         return HttpResponseRedirect('/')  # Добавлено: HttpResponseRedirect для редиректа
     return render(request, 'movie_confirm_delete.html', {'movie': movie})
 
-
-# Представление для страницы регистрации
 def register(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Автоматический вход после регистрации
-            return redirect('movies_list')  # Перенаправление на главную страницу
+            return JsonResponse({
+                "success": True,
+                "redirect_url": "/",  # URL для перенаправления после успешной регистрации
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "errors": form.errors.get_json_data(),  # Возвращаем ошибки в JSON
+            })
     else:
         form = CustomUserCreationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, "register.html", {"form": form})
 
 # Использование встроенных вьюшек для входа и выхода
 class CustomLoginView(LoginView):

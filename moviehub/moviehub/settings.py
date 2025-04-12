@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from celery.schedules import crontab
 from datetime import timedelta
@@ -25,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+xpj8r=i0+3p1=0x9@_^$1$86*yja4&i93x+!_mf2%s6@bkfma'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*', '127.0.0.1', '0.0.0.0', 'moviehub']
 
 LOGIN_REDIRECT_URL = 'movies_list'
 
@@ -100,7 +101,7 @@ DATABASES = {
     }
 }
 
-INTERNAL_IPS = ['127.0.0.1']
+INTERNAL_IPS = ['*', '127.0.0.1', '0.0.0.0', 'moviehub', 'localhost']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -141,6 +142,7 @@ MEDIA_ROOT = BASE_DIR / ''
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

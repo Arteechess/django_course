@@ -1,39 +1,280 @@
 {% extends 'base.html' %}
-
-{% block title %}{{ movie.title }}{% endblock %}
-
+{% load static %}
+{% block title %}
+{{ movie.title }}
+{%endblock %}
 {% block content %}
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-md-4">
-        {% if movie.poster %}
-          <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="img-fluid">
-        {% else %}
-          <img src="https://ap.auezov.edu.kz/images/news/aaa001.png" alt="Нет изображения" class="img-fluid">
-        {% endif %}
+<div class="main_o main">
+  <div class="main_o1 bg_back">
+    <section id="center" class="centre_o pt-5 pb-5">
+      <div class="container-xl">
+        <div class="row centre_o1 text-center">
+          <div class="col-md-12 mt-4">
+            <h1 class="text-white font_60 mt-5">{{ movie.title }}</h1>
+          </div>
+        </div>
       </div>
+    </section>
+  </div>
+</div>
 
-      <div class="col-md-8">
-        <h2>{{ movie.title }}</h2>
-        <p><strong>Дата выхода:</strong> {{ movie.release_date }}</p>
-        <p><strong>Описание:</strong> {{ movie.description }}</p>
-        <p><strong>Жанры:</strong>
-          {% for genre in movie.genres.all %}
-            {{ genre.name }}
-            {% if not forloop.last %}, {% endif %}
-          {% endfor %}
-        </p>
+<div class="border_dashed"></div>
 
-        <h4>Рейтинг:</h4>
-        {% if movie.average_rating %}
-          <p>Средний рейтинг: {{ movie.average_rating }}</p>
-        {% else %}
-          <p>Нет оценок</p>
-        {% endif %}
-
-        <a href="{% url 'movie_update' movie.id %}" class="btn btn-warning">Редактировать</a>
-        <a href="{% url 'movie_delete' movie.id %}" class="btn btn-danger">Удалить</a>
+<section id="detail" class="p_3">
+  <div class="container-xl">
+    <div class="detail_1 row">
+      <div class="col-md-6">
+        <div class="detail_1l">
+          <h2>{{ movie.title }}</h2>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="detail_1r text-end">
+          {% if user.is_authenticated %}
+          <h6 class="mb-0">
+            <a class="button_2" href="#"
+              >Оценить</a
+            >
+          </h6>
+          {% else %}
+          <h6 class="mb-0">
+            <a class="button_2" href="{% url 'login' %}">Войти для оценки</a>
+          </h6>
+          {% endif %}
+        </div>
       </div>
     </div>
+
+    <div class="detail_2 row mt-4">
+      <div class="col-md-4">
+        <div class="detail_2l">
+          <div class="grid clearfix">
+            <figure class="effect-jazz mb-0">
+              {% if movie.poster %}
+              <img
+                src="{{ movie.poster.url }}"
+                class="w-100"
+                alt="{{ movie.title }}"
+                height="530"
+              />
+              {% else %}
+              <img
+                src="https://ap.auezov.edu.kz/images/news/aaa001.png"
+                class="w-100"
+                alt="Нет изображения"
+                height="530"
+              />
+              {% endif %}
+            </figure>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        {% if movie.trailer_url %}
+        <div class="detail_2r position-relative">
+          <div class="detail_2ri">
+            <div class="grid clearfix">
+              <figure class="effect-jazz mb-0">
+                <img
+                  src="{% if movie.poster %}{{ movie.poster.url }}{% else %}https://ap.auezov.edu.kz/images/news/aaa001.png{% endif %}"
+                  class="w-100"
+                  height="530"
+                  alt="{{ movie.title }}"
+                />
+              </figure>
+            </div>
+          </div>
+          <div
+            class="detail_2ri1 position-absolute top-0 text-center bg_back w-100 h-100"
+          >
+            <span class="lh-1">
+              <a
+                class="col_oran"
+                href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#trailerModal"
+              >
+                <i class="fa fa-play-circle align-middle"></i>
+              </a>
+            </span>
+            <h4 class="mb-0 mt-3">
+              <a class="text-white" href="#">Смотреть трейлер</a>
+            </h4>
+          </div>
+        </div>
+        {% else %}
+        <div class="detail_2r">
+          <div class="grid clearfix">
+            <figure class="effect-jazz mb-0">
+              <img
+                src="https://timeweb.com/ru/community/article/c8/c862a2af67116022ceb6b3679828d18c.jpg"
+                class="w-100"
+                height="530"
+                alt="{{ movie.title }}"
+              />
+            </figure>
+          </div>
+          <div class="text-center mt-3">
+            <p class="text-muted">Трейлер отсутствует</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Модальное окно для трейлера -->
+    {% if movie.trailer_url %}
+    <div
+      class="modal fade"
+      id="trailerModal"
+      tabindex="-1"
+      aria-labelledby="trailerModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="trailerModalLabel">
+              Трейлер - {{ movie.title }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="ratio ratio-16x9">
+              <iframe src="{{ movie.trailer_url }}" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="detail_3 row mt-4">
+      <div class="col-md-4">
+        <div class="detail_3l">
+          <h6 class="mb-3 text-muted">
+            <span class="fw-bold text-black me-xxl-5">Жанры:</span>
+              {% for genre in movie.genres.all %}
+                {{ genre.name }}
+                {% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </p>
+          </h6>
+          <h6 class="mb-3 text-muted">
+            <span class="fw-bold text-black me-5">Создатель записи:</span>
+            {{ movie.created_by }}
+          </h6>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="detail_3l">
+          <h6 class="mb-3 text-muted">
+            <span class="fw-bold text-black me-5">Дата выхода:</span>
+            {{ movie.release_date }}
+          </h6>
+          <h6 class="mb-3 text-muted">
+            <span class="fw-bold text-black me-5">Рейтинг:</span>
+              {% if movie.average_rating %}
+                {{ movie.average_rating }}
+              {% else %}
+                Нет оценок
+              {% endif %}
+          </h6>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="detail_3l">
+          {% if user.is_authenticated %}
+          <a
+            href="{% url 'movie_update' movie.id %}"
+            class="button_1 p-2 px-3 font_14 d-inline-block"
+            >✏️ Редактировать</a
+          >
+          <a
+            href="{% url 'movie_delete' movie.id %}"
+            class="button_1 p-2 px-3 font_14 d-inline-block ms-2"
+            >🗑️ Удалить</a
+          >
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <hr />
+
+    <div class="detail_4 row">
+      <div class="col-md-12">
+        <h3>Описание</h3>
+        <p class="mt-3">{{ movie.description }}</p>
+      </div>
+    </div>
+
+    <!-- Дополнительные секции (активные критики, похожие фильмы и т.д.) -->
+    <!-- ... -->
   </div>
+</section>
+
+<style>
+  .bg_back {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .font_60 {
+    font-size: 60px;
+  }
+  .button_1 {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .button_1:hover {
+    background: #e05d00;
+    color: white;
+  }
+  .button_2 {
+    background: #ff6b00;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .button_2:hover {
+    background: #e05d00;
+    color: white;
+  }
+  .col_oran {
+    color: #ff6b00;
+  }
+  .a_tag {
+    color: #ff6b00;
+    text-decoration: none;
+  }
+  .a_tag:hover {
+    text-decoration: underline;
+  }
+  .effect-jazz img {
+    transition: transform 0.3s;
+  }
+  .effect-jazz:hover img {
+    transform: scale(1.05);
+  }
+</style>
+
+<script>
+  if (document.getElementById("trailerModal")) {
+    var trailerModal = document.getElementById("trailerModal");
+    trailerModal.addEventListener("hide.bs.modal", function () {
+      var iframe = trailerModal.querySelector("iframe");
+      iframe.src = iframe.src;
+    });
+  }
+</script>
 {% endblock %}

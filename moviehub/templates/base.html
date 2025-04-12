@@ -1,85 +1,357 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MovieHub</title>
+
+    <!-- Bootstrap -->
     <link
-      rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&family=Poppins&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link href="{% static 'css/global.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/index.css' %}" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <style>
       body {
         display: flex;
         min-height: 100vh;
         flex-direction: column;
+        font-family: "Poppins", sans-serif;
       }
-      footer {
-        margin-top: auto;
-        background-color: #f8f9fa;
-        text-align: center;
-        padding: 10px 0;
+      .navbar-brand {
+        font-weight: bold;
       }
-      .form-container {
-        max-width: 500px;
-        margin: 0 auto;
-        padding: 30px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      .col_oran {
+        color: #ff6b00;
       }
-      .form-container h2 {
-        text-align: center;
+      .bg_oran {
+        background-color: #ff6b00;
       }
-      .form-container form input {
-        margin-bottom: 15px;
+      .border_1 {
+        border: 1px solid #ff6b00;
+      }
+      .drop_icon:hover {
+        color: #ff6b00 !important;
       }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="{% url 'movies_list' %}">MovieHub</a>
-        <ul class="navbar-nav">
-          {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Выход ({{ user.username }})</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'movie_create' %}">Добавить фильм</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Вход</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'register' %}">Регистрация</a>
-            </li>
-          {% endif %}
-        </ul>
-      </div>
-    </nav>
+    <!-- Header -->
+    <div class="main clearfix position-relative">
+      <div class="main_1 clearfix position-absolute top-0 w-100">
+        <section id="header">
+          <nav
+            class="navbar navbar-expand-md navbar-light px-4"
+            id="navbar_sticky"
+          >
+            <div class="container-fluid">
+              <a
+                class="navbar-brand p-0 fw-bold text-white"
+                href="{% url 'home' %}"
+              >
+                <i class="fa fa-modx col_oran"></i> MovieHub
+              </a>
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+              >
+                <span class="navbar-toggler-icon"></span>
+              </button>
 
-    <main class="container mt-4">
-      {% block content %}
-        <div class="form-container">
-          {% if messages %}
-            <div class="alert alert-info" role="alert">
-              {% for message in messages %}
-                {{ message }}
-              {% endfor %}
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-0 ms-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"
+                      >Домой</a
+                    >
+                  </li>
+
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      Фильмы
+                    </a>
+                    <ul class="dropdown-menu drop_1">
+                      <li>
+                        <a class="dropdown-item" href="{% url 'movies_list' %}"
+                          ><i class="fa fa-chevron-right font_12 me-1"></i> Все
+                          фильмы</a
+                        >
+                      </li>
+                      {% if user.is_authenticated %}
+                      <li>
+                        <a
+                          class="dropdown-item border-0"
+                          href="{% url 'movie_create' %}"
+                          ><i class="fa fa-chevron-right font_12 me-1"></i>
+                          Добавить фильм</a
+                        >
+                      </li>
+                      {% endif %}
+                    </ul>
+                  </li>
+
+                  {% if user.is_authenticated %}
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu drop_1">
+                      <li>
+                        <a class="dropdown-item" href="{% url 'logout' %}"
+                          ><i class="fa fa-sign-out me-1"></i> Выход</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                  {% else %}
+                  <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      id="navbarDropdown"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      Войти
+                    </a>
+                    <ul class="dropdown-menu drop_1">
+                      <li>
+                        <a class="dropdown-item" href="{% url 'login' %}"
+                          ><i class="fa fa-sign-in me-1"></i> Авторизация</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          class="dropdown-item border-0"
+                          href="{% url 'register' %}"
+                          ><i class="fa fa-user-plus me-1"></i> Регистрация</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                  {% endif %}
+                </ul>
+
+                <ul class="navbar-nav mb-0 ms-auto">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link fs-5 drop_icon"
+                      href="{% url 'movies_list' %}"
+                    >
+                      <i class="fa fa-search"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
-          {% endif %}
-          
-          {% block form_content %}{% endblock %}
-        </div>
-      {% endblock %}
+          </nav>
+        </section>
+      </div>
+    </div>
+
+    <main class="container-fluid px-0">
+      {% block content %}
+      <!-- Здесь будет основной контент страницы -->
+      {% if messages %}
+      <div class="alert alert-info" role="alert">
+        {% for message in messages %} {{ message }} {% endfor %}
+      </div>
+      {% endif %} {% endblock %}
     </main>
 
+    <!-- Footer -->
     <footer>
-      <p>&copy; 2025 MovieHub</p>
+      <section id="footer" class="p_3 bg-black">
+        <div class="container-xl">
+          <div class="footer_1 row pb-4">
+            <div class="col-md-3">
+              <div class="footer_1l">
+                <h4 class="mb-0">
+                  <a class="fw-bold text-white" href="index.html"
+                    ><i class="fa fa-modx col_oran"></i> MovieHub
+                  </a>
+                </h4>
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="footer_1r text-end">
+                <ul class="mb-0">
+                  <li class="d-inline-block">
+                    <a class="text-white-50 a_tag" href="#">Help</a>
+                  </li>
+                  <li class="d-inline-block text-white-50">/</li>
+                  <li class="d-inline-block me-2">
+                    <a class="text-white-50 a_tag" href="#"> Privacy Policy</a>
+                  </li>
+                  <li class="d-inline-block">
+                    <a class="social_icon" href="#">
+                      <i class="fa fa-twitter"></i
+                    ></a>
+                  </li>
+                  <li class="d-inline-block">
+                    <a class="social_icon" href="#">
+                      <i class="fa fa-facebook"></i
+                    ></a>
+                  </li>
+                  <li class="d-inline-block">
+                    <a class="social_icon" href="#">
+                      <i class="fa fa-instagram"></i
+                    ></a>
+                  </li>
+                  <li class="d-inline-block">
+                    <a class="social_icon" href="#">
+                      <i class="fa fa-pinterest"></i
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer_2 row mt-4">
+            <div class="col-md-3">
+              <div class="footer_2i">
+                <p class="text-white fw-bold fs-5">
+                  Buy movie tickets easily with Aovis system nationwide
+                </p>
+                <h6 class="mb-0 mt-4">
+                  <a class="button" href="#">Get Your Ticket</a>
+                </h6>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="footer_2i">
+                <h5 class="col_oran mb-4">Movies</h5>
+                <div class="row footer_1ism">
+                  <h6 class="fw-normal col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Action</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Adventure</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Animation</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Thriller</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Crime</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6 mb-0">
+                    <a class="text-white-50 a_tag" href="#"> Comedy</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="footer_2i">
+                <h5 class="col_oran mb-4">Links</h5>
+                <div class="row footer_1ism">
+                  <h6 class="fw-normal col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> About Us</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> My account</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> News</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Latest Events</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6">
+                    <a class="text-white-50 a_tag" href="#"> Privacy</a>
+                  </h6>
+                  <h6 class="fw-normal mt-2 col-md-12 col-6 mb-0">
+                    <a class="text-white-50 a_tag" href="#"> Contact Us</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="footer_2i">
+                <h5 class="col_oran mb-4">Newsletter</h5>
+                <p class="text-white-50">
+                  Subscribe to Leitmotif newsletter this very day.
+                </p>
+                <div class="input-group bg-white">
+                  <input
+                    type="text"
+                    class="form-control bg-transparent rounded-0 border-0"
+                    placeholder="Enter Your Email"
+                  />
+                  <span class="input-group-btn">
+                    <button
+                      class="btn btn-primary bg-transparent rounded-0 border-0 col_oran p-3"
+                      type="button"
+                    >
+                      <i class="fa fa-location-arrow"></i>
+                    </button>
+                  </span>
+                </div>
+                <div class="form-check mt-3 text-white-50">
+                  <input class="form-check-input" type="checkbox" value="" />
+                  <label class="form-check-label" for="flexCheckDefault">
+                    I agree to all terms and policies of the company
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="footer_b" class="pt-3 pb-3 bg-dark">
+        <div class="container-xl">
+          <div class="footer_b1 row text-center">
+            <div class="col-md-12">
+              <p class="mb-0 text-white-50">
+                © 2025 MovieHub. All Rights Reserved
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/common.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
   </body>
 </html>

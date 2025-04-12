@@ -26,6 +26,9 @@ class User(AbstractUser):
 class MovieManager(models.Manager):
     def recent_movies(self):
         return self.annotate(avg_score=Avg('ratings__score')).filter(avg_score__gt=7)
+    
+    def top_rated(self, count=5):
+        return self.annotate(avg_score=Avg('ratings__score')).order_by('-avg_score')[:count]
 
 
 class Genre(models.Model):

@@ -1,0 +1,345 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="main_2 clearfix">
+  <!-- Карусель с фильмами -->
+  <section id="center" class="center_home">
+    <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button
+          type="button"
+          data-bs-target="#mainCarousel"
+          data-bs-slide-to="0"
+          class="active"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#mainCarousel"
+          data-bs-slide-to="1"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#mainCarousel"
+          data-bs-slide-to="2"
+        ></button>
+      </div>
+
+      <div
+        id="carouselExampleCaptions"
+        class="carousel slide"
+        data-bs-ride="carousel"
+      >
+        <div class="carousel-indicators">
+          <button
+            type="button"
+            data-bs-target="#carouselExampleCaptions"
+            data-bs-slide-to="0"
+            class="active"
+            aria-label="Slide 1"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carouselExampleCaptions"
+            data-bs-slide-to="1"
+            aria-label="Slide 2"
+            class=""
+            aria-current="true"
+          ></button>
+          <button
+            type="button"
+            data-bs-target="#carouselExampleCaptions"
+            data-bs-slide-to="2"
+            aria-label="Slide 3"
+          ></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img
+              src="{% static 'img/1.jpg' %}"
+              class="d-block w-100"
+              alt="..."
+            />
+            <div class="carousel-caption d-md-block">
+              <h3 class="col_white">Драма</h3>
+              <h1 class="text-white mt-3">Неприкасаемые</h1>
+              <p class="mt-3 text-light w-75">
+                Аристократ на коляске нанимает в сиделки бывшего заключенного.
+                Искрометная французская комедия с Омаром Си
+              </p>
+              </ul>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img
+              src="{% static 'img/2.jpg' %}"
+              class="d-block w-100"
+              alt="..."
+            />
+            <div class="carousel-caption d-md-block">
+              <h3 class="col_white">Научная фантастика</h3>
+              <h1 class="text-white mt-3">Интерстеллар</h1>
+              <p class="mt-3 text-light w-75">
+                «Следующий шаг человечества станет величайшим»
+              </p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img
+              src="{% static 'img/3.jpg' %}"
+              class="d-block w-100"
+              alt="..."
+            />
+            <div class="carousel-caption d-md-block">
+              <h3 class="col_white">Биография, история</h3>
+              <h1 class="text-white mt-3">Калашников</h1>
+              <p class="mt-3 text-light w-75">
+                Все знают эту фамилию, но не все знают, какой долгий и тернистый
+                путь прошёл парень-самоучка, чтобы в 28 лет создать легендарный
+                автомат АК-47, который по сей день является символом оружейной
+                мысли нашего времени.
+              </p>
+            </div>
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#mainCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#mainCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- Рекомендуемые фильмы -->
+<section id="trend" class="py-5">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-md-12">
+        <i class="fas fa-film fa-2x text-orange mb-3"></i>
+        <h2 class="mb-3">Рекомендуемые фильмы</h2>
+        <p class="text-muted">Лучшие подборки от наших кинокритиков</p>
+      </div>
+    </div>
+
+    <div class="row">
+      {% for movie in featured_movies %}
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card border-0 position-relative movie-card">
+          {% if movie.poster %}
+          <img
+            src="{{ movie.poster.url }}"
+            alt="{{ movie.title }}"
+            class="img-fluided"
+          />
+          {% else %}
+          <img
+            src="https://ap.auezov.edu.kz/images/news/aaa001.png"
+            alt="Нет изображения"
+            class="img-fluided"
+          />
+          {% endif %}
+          <div class="card-overlay">
+            <h5>{{ movie.title }}</h5>
+            <p class="small">{{ movie.genre }}</p>
+            <a
+              href="{% url 'movie_detail' movie.id %}"
+              class="btn btn-sm btn-orange"
+              >Смотреть</a
+            >
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Топ фильмов -->
+<section id="top-movies" class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-md-12">
+        <i class="fas fa-trophy fa-2x text-orange mb-3"></i>
+        <h2 class="mb-3">Топ фильмов</h2>
+        <p class="text-muted">По версии наших зрителей</p>
+      </div>
+    </div>
+
+    <div class="row">
+      {% for movie in top_movies %}
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="row g-0">
+            <div class="col-md-4">
+              {% if movie.poster %}
+              <img
+                src="{{ movie.poster.url }}"
+                alt="{{ movie.title }}"
+                class="img-fluid"
+              />
+              {% else %}
+              <img
+                src="https://ap.auezov.edu.kz/images/news/aaa001.png"
+                alt="Нет изображения"
+                class="img-fluid"
+              />
+              {% endif %}
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">{{ movie.title }}</h5>
+                <p class="card-text small text-muted">
+                  <i class="fas fa-star text-warning"></i> 
+                  {{ movie.average_rating }}
+                  <span class="ms-3">
+                    <i class="fas fa-clock text-orange"></i> 
+                    {{ movie.release_date }}
+                </span>
+                </p>
+                <p class="card-text small">{{ movie.short_description }}</p>
+                <a
+                  href="{% url 'movie_detail' movie.id %}"
+                  class="btn btn-sm btn-orange"
+                  >Подробнее</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Последние отзывы -->
+<section id="reviews" class="py-5">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-md-12">
+        <i class="fas fa-comments fa-2x text-orange mb-3"></i>
+        <h2 class="mb-3">Последние отзывы</h2>
+        <p class="text-muted">Мнения наших пользователей</p>
+      </div>
+    </div>
+
+    <div class="row">
+      {% for review in latest_reviews %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex mb-3">
+              <div>
+                <h6 class="mb-0">{{ review.user.username }}</h6>
+                <div class="small text-warning">
+                  {% for i in "12345" %}
+                  {% if forloop.counter <= review.rating%}
+                  <i class="fas fa-star"></i>
+                  {% else %}
+                  <i class="far fa-star"></i>
+                  {% endif %} 
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <h5 class="card-title">{{ review.movie.title }}</h5>
+            <p class="card-text">{{ review.text|truncatechars:150 }}</p>
+          </div>
+          <div class="card-footer bg-white border-0">
+            <small class="text-muted"
+              >{{ review.created_at|date:"d.m.Y" }}</small
+            >
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .img-fluided {
+    box-sizing: border-box;
+    width: 100%;
+    height: 400px;
+  }
+
+  .text-orange {
+    color: #ff6b00;
+  }
+
+  .bg-orange {
+    background-color: #ff6b00;
+  }
+
+  .btn-orange {
+    background-color: #ff6b00;
+    color: white;
+    border: none;
+  }
+
+  .btn-orange:hover {
+    background-color: #e05d00;
+    color: white;
+  }
+
+  .movie-card {
+    transition: transform 0.3s;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .movie-card:hover {
+    transform: translateY(-10px);
+  }
+
+  .movie-card .card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+  }
+
+  .movie-card:hover .card-overlay {
+    transform: translateY(0);
+  }
+
+  .carousel-caption {
+    background: rgba(0, 0, 0, 0.5);
+  }
+</style>
+{% endblock %}

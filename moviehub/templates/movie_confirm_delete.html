@@ -1,12 +1,35 @@
 {% extends 'base.html' %}
-
 {% block title %}Удаление фильма{% endblock %}
+{%block content %}
+<div class="main_o main">
+  <div class="main_o1 bg_back">
+    <section id="center" class="centre_o pt-5 pb-5">
+      <div class="container-xl">
+        <div class="row centre_o1 text-center">
+          <div class="col-md-12 mt-4">
+            <h1 class="text-white font_60 mt-5">Удаление фильма</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 
-{% block content %}
+<div class="border_dashed"></div>
+
+<div class="confirm">
   <h2>Вы уверены, что хотите удалить "{{ movie.title }}"?</h2>
   <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-danger">Удалить</button>
     <a href="{% url 'movies_list' %}" class="btn btn-secondary">Отмена</a>
   </form>
+</div>
+
+<style>
+  .confirm {
+    margin: 50px auto;
+    text-align: center;
+  }
+</style>
 {% endblock %}

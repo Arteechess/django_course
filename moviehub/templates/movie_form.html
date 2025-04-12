@@ -1,26 +1,179 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Фильм{% endblock %}
 
 {% block content %}
-<h2>
-  {% if form.instance.pk %}Редактировать фильм{% else %}Добавить фильм{% endif %}
-</h2>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {% for field in form %}
-    <div class="form-group">
-      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-      {{ field }}
-      {% if field.errors %}
-        <div class="text-danger">
-          {% for error in field.errors %}
-            <p>{{ error }}</p>
-          {% endfor %}
+<div class="main_o main">
+  <div class="main_o1 bg_back">
+    <section id="header"></section>
+    <section id="center" class="centre_o pt-5 pb-5">
+      <div class="container-xl">
+        <div class="row centre_o1 text-center">
+          <div class="col-md-12 mt-4">
+            <h1 class="text-white font_60 mt-5">
+              {% if form.instance.pk %}Редактировать фильм{% else %}Добавить фильм{% endif %}
+            </h1>
+          </div>
         </div>
-      {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="border_dashed"></div>
+
+<section id="movie_form" class="p_3">
+  <div class="container-xl">
+    <div class="row login_1">
+      <div class="col-md-12">
+        <div class="login_1m p-5 px-4 bg-light w-75 mx-auto">  {# Увеличена ширина формы #}
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% for field in form %}
+              <div class="form-group mb-4">
+                <h6 class="mb-3 fw-bold">{{ field.label }}</h6>
+                
+                {% if field.name == 'genres' %}
+                  {# Множественный выбор жанров с увеличенной шириной #}
+                  <div class="genre-select-wrapper">  {# Обертка для стилизации #}
+                    <select class="form-control {% if field.errors %}is-invalid{% endif %}" 
+                            name="{{ field.name }}" 
+                            id="{{ field.id_for_label }}"
+                            multiple
+                            size="6"
+                            style="width: 100%; min-height: 150px;">  {# Увеличенные размеры #}
+                      {% for choice in field.field.choices %}
+                        <option value="{{ choice.0 }}" 
+                                {% if choice.0 in field.value|default:'' %}selected{% endif %}>
+                          {{ choice.1 }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <small class="text-muted">Для выбора нескольких жанров: Ctrl+клик (Windows) или Command+клик (Mac)</small>
+                
+                {% elif field.field.widget.input_type == 'select' %}
+                  {# Одиночный выбор #}
+                  <select class="form-control {% if field.errors %}is-invalid{% endif %}" 
+                          name="{{ field.name }}" 
+                          id="{{ field.id_for_label }}">
+                    {% for choice in field.field.choices %}
+                      <option value="{{ choice.0 }}" 
+                              {% if field.value == choice.0 %}selected{% endif %}>
+                        {{ choice.1 }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                
+                {% else %}
+                  {# Текстовые поля и файлы #}
+                  <input class="form-control {% if field.errors %}is-invalid{% endif %}" 
+                         type="{{ field.field.widget.input_type }}" 
+                         name="{{ field.name }}"
+                         id="{{ field.id_for_label }}"
+                         value="{{ field.value|default:'' }}"
+                         {% if field.field.required %}required{% endif %}
+                         {% if field.field.widget.input_type == 'file' %}accept="image/*"{% endif %}>
+                {% endif %}
+                
+                {% if field.help_text %}
+                  <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                
+                {% if field.errors %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in field.errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between mt-4">
+              <button type="submit" class="button d-block text-center w-50 me-2">
+                Сохранить
+              </button>
+              <a href="{% url 'movies_list' %}" class="button d-block text-center w-50 ms-2 bg-secondary text-decoration-none">
+                Назад
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-  {% endfor %}
-  <button type="submit" class="btn btn-success">Сохранить</button>
-  <a href="{% url 'movies_list' %}" class="btn btn-secondary">Назад</a>
-</form>
+  </div>
+</section>
+
+<style>
+  .bg_back {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .font_60 {
+    font-size: 60px;
+  }
+  .login_1m {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  .button {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .button:hover {
+    background: #e05d00;
+    color: white;
+  }
+  .bg-secondary {
+    background: #6c757d !important;
+  }
+  .bg-secondary:hover {
+    background: #5a6268 !important;
+  }
+  .is-invalid {
+    border-color: #dc3545;
+  }
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+  }
+  
+  /* Стили для поля выбора жанров */
+  .genre-select-wrapper {
+    width: 100%;
+  }
+  select[multiple] {
+    min-width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+  }
+  select[multiple] option {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+  }
+  select[multiple] option:hover {
+    background-color: #f8f9fa;
+  }
+
+  @media (max-width: 768px) {
+    .login_1m {
+      width: 100% !important;
+      padding: 2rem 1rem !important;
+    }
+    .font_60 {
+      font-size: 40px;
+    }
+    .button {
+      width: 100% !important;
+      margin: 5px 0 !important;
+    }
+  }
+</style>
 {% endblock %}

@@ -50,7 +50,8 @@ urlpatterns = [
     path('logout/', views.custom_logout, name='logout'),
 
     # Маршруты для HTML-страниц
-    path('', views.movies_list, name='movies_list'),  # Главная страница со списком фильмов
+    path('', views.home_view, name='home'),  # Главная страница со списком фильмов
+    path('movies/list/', views.movies_list, name='movies_list'),  # Главная страница со списком фильмов
     path('movies/<int:pk>/', views.movie_detail, name='movie_detail'),  # Страница фильма
     path('movies/create/', views.movie_create, name='movie_create'),  # Форма создания фильма
     path('movies/<int:pk>/edit/', views.movie_update, name='movie_update'),  # Форма редактирования фильма

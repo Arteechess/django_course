@@ -1,10 +1,241 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="main_o main">
+  <div class="main_o1 bg_back">
+    <section id="header"></section>
+    <section id="center" class="centre_o pt-5 pb-5">
+      <div class="container-xl">
+        <div class="row centre_o1 text-center">
+          <div class="col-md-12 mt-4">
+            <h1 class="text-white font_60 mt-5">Регистрация</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 
-{% block content %}
-  <h2>Регистрация</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Зарегистрироваться</button>
-  </form>
+<div class="border_dashed"></div>
+
+<section id="login" class="p_3">
+  <div class="container-xl">
+    <div class="row login_1">
+      <div class="col-md-12">
+        <div class="login_1m p-5 px-4 bg-light w-50 mx-auto">
+          <form id="form" method="post">
+            {% csrf_token %}
+
+            <h6 class="mb-3 fw-bold">Имя пользователя</h6>
+            <input
+              class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+              name="username"
+              placeholder="Придумайте имя пользователя"
+              type="text"
+              value="{{ form.username.value|default:'' }}"
+            />
+            {% if form.username.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.username.errors.0 }}
+            </div>
+            {% endif %}
+
+            <h6 class="mb-3 fw-bold mt-4">Email</h6>
+            <input
+              class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+              name="email"
+              placeholder="Введите свой email"
+              type="email"
+              value="{{ form.email.value|default:'' }}"
+            />
+            {% if form.email.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.email.errors.0 }}
+            </div>
+            {% endif %}
+
+            <h6 class="mb-3 fw-bold mt-4">Пароль</h6>
+            <input
+              class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+              name="password1"
+              placeholder="Придумайте пароль"
+              type="password"
+            />
+            {% if form.password1.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.password1.errors.0 }}
+            </div>
+            {% endif %}
+
+            <h6 class="mb-3 fw-bold mt-4">Повтор пароля</h6>
+            <input
+              class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+              name="password2"
+              placeholder="Повторите пароль"
+              type="password"
+            />
+            {% if form.password2.errors %}
+            <div class="invalid-feedback d-block">
+              {{ form.password2.errors.0 }}
+            </div>
+            {% endif %}
+
+            <h6 class="mb-3 fw-bold mt-4">Роль</h6>
+            <select
+              class="form-control {% if form.role.errors %}is-invalid{% endif %}"
+              name="role"
+              required
+            >
+              <option value="" disabled selected>Выберите роль</option>
+              <option value="user">Пользователь</option>
+              <option value="admin">Модератор</option>
+            </select>
+            {% if form.role.errors %}
+            <div class="invalid-feedback d-block">{{ form.role.errors.0 }}</div>
+            {% endif %}
+
+            <div class="form-check mt-3">
+              <input
+                class="form-check-input {% if form.terms.errors %}is-invalid{% endif %}"
+                type="checkbox"
+                id="terms"
+                name="terms"
+                {%
+                if
+                form.terms.value
+                %}checked{%
+                endif
+                %}
+              />
+              <label class="form-check-label" for="terms">
+                Я соглашаюсь с
+                <a href="#" class="fw-bold">Политикой конфиденциальности</a>
+              </label>
+              {% if form.terms.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.terms.errors.0 }}
+              </div>
+              {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">
+              {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit" class="button d-block text-center w-100 mt-3">
+              Зарегистрироваться
+            </button>
+
+            <p class="mt-3 mb-0 text-center">
+              Уже являетесь одним из наших критиков?
+              <a class="fw-bold col_oran" href="{% url 'login' %}"
+                >Авторизируйтесь</a
+              >
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bg_back {
+    background: rgba(0, 0, 0, 0.7);
+  }
+  .font_60 {
+    font-size: 60px;
+  }
+  .login_1m {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  .button {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .button:hover {
+    background: #e05d00;
+    color: white;
+  }
+  .col_oran {
+    color: #ff6b00;
+  }
+  .a_tag {
+    color: #ff6b00;
+    text-decoration: none;
+  }
+  .a_tag:hover {
+    text-decoration: underline;
+  }
+  .is-invalid {
+    border-color: #dc3545;
+  }
+  .invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875em;
+  }
+
+  @media (max-width: 768px) {
+    .login_1m {
+      width: 100% !important;
+      padding: 2rem 1rem !important;
+    }
+    .font_60 {
+      font-size: 40px;
+    }
+  }
+</style>
+<script>
+  const form = document.getElementById("form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Отменяем стандартную отправку формы
+
+    const formData = new FormData(form); // Собираем данные формы
+    const response = await fetch("{% url 'register' %}", {
+      // URL вашего эндпоинта регистрации
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}", // CSRF-токен для защиты
+      },
+    });
+
+    const data = await response.json(); // Парсим JSON-ответ
+
+    if (data.success) {
+      // Если регистрация успешна, перенаправляем или показываем сообщение
+      window.location.href = data.redirect_url || "{% url 'home' %}"; // Перенаправление
+    } else {
+      // Если есть ошибки, обновляем их на странице
+      if (data.errors) {
+        // Очищаем предыдущие ошибки
+        document
+          .querySelectorAll(".is-invalid")
+          .forEach((el) => el.classList.remove("is-invalid"));
+        document
+          .querySelectorAll(".invalid-feedback")
+          .forEach((el) => el.remove());
+
+        // Добавляем новые ошибки
+        for (const field in data.errors) {
+          const input = form.querySelector(`[name="${field}"]`);
+          if (input) {
+            input.classList.add("is-invalid");
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "invalid-feedback d-block";
+            errorDiv.textContent = data.errors[field][0];
+            input.after(errorDiv);
+          }
+        }
+      }
+    }
+  });
+</script>
 {% endblock %}

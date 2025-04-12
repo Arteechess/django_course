@@ -1,61 +1,247 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="main_o main">
+  <div class="main_o1 bg_back">
+    <section id="center" class="centre_o pt-5 pb-5">
+      <div class="container-xl">
+        <div class="row centre_o1 text-center">
+          <div class="col-md-12 mt-4">
+            <h1 class="text-white font_60 mt-5">
+              Фильмы и сериалы в репертуаре
+            </h1>
+            <p class="text-white-50">Всего фильмов: {{ movie_count }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
 
-{% block title %}
-    Список фильмов
-{% endblock %}
+<div class="border_dashed"></div>
 
-{% block content %}
-    <h2>Список фильмов</h2>
-    <p><strong>Количество фильмов: </strong>{{ movie_count }}</p>
+<section id="trend" class="p_3">
+  <div class="container-xl">
+    <div class="blog_1r1 mb-4">
+      <form method="get" action="{% url 'movies_list' %}">
+        <div class="input-group bg_oran">
+          <input
+            type="text"
+            name="search"
+            class="form-control bg-transparent rounded-0 border-0 text-white fs-5"
+            placeholder="Найти..."
+            value="{{ search_term }}"
+          />
+          <button
+            class="btn btn-primary bg-transparent rounded-0 border-0 text-white p-3 fs-5"
+            type="submit"
+          >
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </form>
+    </div>
 
-    <h3>Топ 5 фильмов по рейтингу:</h3>
-    <ul>
-        {% for movie in top_movies %}
-            <li><a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a> - Средний рейтинг: {{ movie.average_rating }}</li>
-        {% endfor %}
-    </ul>
+    <div class="row mb-5">
+      <div class="col-md-12">
+        <h4 class="text-black mb-3">
+          <i class="fa fa-trophy col_oran me-2"></i>
+          Топ фильмов:
+        </h4>
+        <div class="d-flex flex-wrap gap-3">
+          {% for movie in top_movies %}
+          <a
+            href="{{ movie.get_absolute_url }}"
+            class="badge bg-secondary text-white p-2"
+          >
+            {{ movie.title }} ({{ movie.average_rating|floatformat:1 }})
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
 
-    <form id="searchForm" method="get" class="d-flex align-items-center mb-4 gap-2">
-        <input type="text" class="form-control" id="search" name="search" placeholder="Поиск по названию фильма" value="{{ search_term }}">
-        <button type="submit" class="btn btn-primary ml-2">Поиск</button>
-    </form>
+    <div class="row trend_2">
+      <h4 class="text-black mb-3">Список фильмов:</h4>
+      {% for movie in movies %}
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="trend_2i position-relative">
+          <div class="trend_2i1">
+            {% if movie.poster %}
+            <img
+              src="{{ movie.poster.url }}"
+              class="w-100"
+              alt="{{ movie.title }}"
+            />
+            {% else %}
+            <img
+              src="https://ap.auezov.edu.kz/images/news/aaa001.png"
+              class="w-100"
+              alt="No poster"
+            />
+            {% endif %}
+          </div>
+          <div
+            class="trend_2i2 bg_back position-absolute w-100 h-100 top-0 d-flex flex-column justify-content-center px-4"
+          >
+            <div class="text-center">
+              <h6 class="font_14 text-light">
+                {% for genre in movie.genres.all %} {{ genre.name }}
+                {% if notforloop.last %},{% endif %} {% endfor %}
+              </h6>
+              <h6 class="font_12 text-light">
+                Рейтинг: {{ movie.average_rating|default:"Нет оценок" }}
+              </h6>
+              <h5>
+                <a class="text-white a_tag" href="{{ movie.get_absolute_url }}"
+                  >{{ movie.title }}</a
+                >
+              </h5>
+              <p class="text-white-50 small">
+                {{ movie.release_date|date:"Y" }}
+              </p>
+            </div>
 
-    <p><strong>Количество фильмов: </strong>{{ movie_count }}</p>
+            <div class="mt-auto text-center pb-3">
+              <!-- Кнопки внизу, но выше чем было -->
+              <a
+                href="{{ movie.get_absolute_url }}"
+                class="button_1 p-2 px-3 font_14 d-inline-block"
+                >Подробнее</a
+              >
+              {% if user.is_authenticated %}
+              <a
+                href="{% url 'movie_update' movie.id %}"
+                class="button_1 p-2 px-3 font_14 d-inline-block ms-2"
+                >✏️</a
+              >
+              <a
+                href="{% url 'movie_delete' movie.id %}"
+                class="button_1 p-2 px-3 font_14 d-inline-block ms-2"
+                >🗑️</a
+              >
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Дата выхода</th>
-                <th>Жанры</th>
-                <th>Рейтинг</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for movie in movies %}
-                <tr>
-                    <td><a href="{{ movie.get_absolute_url }}">{{ movie.title }}</a></td>
-                    <td>{{ movie.release_date }}</td>
-                    <td>
-                        {% for genre in movie.genres.all %}
-                            {{ genre.name }}
-                            {% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% if movie.average_rating %}
-                            {{ movie.average_rating }}
-                        {% else %}
-                            Нет оценок
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'movie_update' movie.id %}" class="btn btn-sm btn-warning">Редактировать</a>
-                        <a href="{% url 'movie_delete' movie.id %}" class="btn btn-sm btn-danger">Удалить</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- Пагинация -->
+    <div class="pages mt-4 row text-center">
+      <div class="col-md-12">
+        <ul class="mb-0 pagination-custom">
+          {% if page_obj.has_previous %}
+          <li>
+            <a
+              href="?page=1{% if search_term %}&search={{ search_term }}{% endif %}"
+            >
+              <i class="fa fa-angle-double-left"></i>
+            </a>
+          </li>
+          <li>
+            <a
+              href="?page={{ page_obj.previous_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}"
+            >
+              <i class="fa fa-chevron-left"></i>
+            </a>
+          </li>
+          {% endif %} {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+          <li>
+            <a
+              class="act"
+              href="?page={{ num }}{% if search_term %}&search={{ search_term }}{% endif %}"
+              >{{ num }}</a
+            >
+          </li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+          <li>
+            <a
+              href="?page={{ num }}{% if search_term %}&search={{ search_term }}{% endif %}"
+              >{{ num }}</a
+            >
+          </li>
+          {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+          <li>
+            <a
+              href="?page={{ page_obj.next_page_number }}{% if search_term %}&search={{ search_term }}{% endif %}"
+            >
+              <i class="fa fa-chevron-right"></i>
+            </a>
+          </li>
+          <li>
+            <a
+              href="?page={{ page_obj.paginator.num_pages }}{% if search_term %}&search={{ search_term }}{% endif %}"
+            >
+              <i class="fa fa-angle-double-right"></i>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bg_oran {
+    background-color: #ff6b00;
+  }
+  .border_oran {
+    border-color: #ff6b00;
+  }
+  .button_1 {
+    background: #ff6b00;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  .button_1:hover {
+    background: #e05d00;
+    color: white;
+  }
+  .page-link {
+    margin: 0 5px;
+  }
+  .trend_2i {
+    border-radius: 8px;
+    overflow: hidden;
+    height: 400px;
+    transition: all 0.3s;
+  }
+  .trend_2i:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  .trend_2i1 {
+    height: 100%;
+  }
+  .trend_2i1 img {
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.3s;
+  }
+  .trend_2i:hover .trend_2i1 img {
+    filter: brightness(0.5);
+  }
+  .trend_2i2 {
+    opacity: 0;
+    transition: opacity 0.3s;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .trend_2i:hover .trend_2i2 {
+    opacity: 1;
+  }
+  .a_tag {
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .a_tag:hover {
+    color: #ff6b00 !important;
+  }
+</style>
 {% endblock %}
